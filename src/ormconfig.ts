@@ -8,7 +8,8 @@ const config: PostgresConnectionOptions = {
     password: 'postgres123',
     database: 'nestjs_training',
     entities: [__dirname + '/**/*.model{.ts,.js}'],
-    synchronize: true
+    synchronize: false,
+    migrations: [__dirname + '/migrations/**/*{.ts,.js}']
 }
 
 export default config;
