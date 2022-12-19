@@ -4,7 +4,7 @@ import { IBaseService } from "src/interfaces/iBaseService.service";
 import { TagModel } from "src/models/tag.model";
 import { Repository } from "typeorm";
 @Injectable()
-export class TagService implements IBaseService<TagModel>  {
+export class TagService implements IBaseService<TagModel, any>  {
 
   constructor(@InjectRepository(TagModel) private readonly _tagRepository: Repository<TagModel>) { }
 
