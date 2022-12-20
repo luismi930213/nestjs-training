@@ -1,5 +1,5 @@
-import { Controller, Get, Post } from '@nestjs/common';
-import { Body } from '@nestjs/common/decorators';
+import { Controller, Get, Post, ValidationPipe } from '@nestjs/common';
+import { Body, UsePipes } from '@nestjs/common/decorators';
 import { UserModel } from 'src/models/user.model';
 import { SaveUserDto } from './dto/saveUser.dto';
 import { UserService } from './user.service';
@@ -13,6 +13,7 @@ export class UserController {
     }
 
     @Post()
+    @UsePipes(new ValidationPipe())
     async save(@Body('user') saveUser: SaveUserDto): Promise<UserModel> {
         return this._userService.save(saveUser)
     }

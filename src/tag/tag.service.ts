@@ -14,7 +14,7 @@ export class TagService implements IBaseService<TagModel, any>  {
   findOne(id: number): TagModel {
     throw new Error("Method not implemented.");
   }
-  save(item: TagModel): void {
+  save(item: TagModel): Promise<TagModel> {
     throw new Error("Method not implemented.");
   }
   remove(id: number): void {
