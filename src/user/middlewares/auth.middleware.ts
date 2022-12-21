@@ -9,7 +9,7 @@ export class AuthMiddleware implements NestMiddleware {
 
     constructor(private readonly _userService: UserService) { }
 
-    async use(req: Request, res: Response, next: NextFunction) {
+    async use(req: Request, _: Response, next: NextFunction) {
         if (!req.headers.authorization) {
             //@ts-ignore
             req.user = null;

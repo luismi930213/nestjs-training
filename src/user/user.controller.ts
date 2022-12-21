@@ -1,22 +1,26 @@
-import { Controller, Get, Post, ValidationPipe } from '@nestjs/common';
-import { Body, Param, UsePipes } from '@nestjs/common/decorators';
+import { Controller, Put, Get, Post, ValidationPipe } from '@nestjs/common';
+import { Body, Param, UseGuards, UsePipes } from '@nestjs/common/decorators';
 import { UserModel } from 'src/models/user.model';
+import { CurrentUser } from './decorators/user.decorator';
 import { LoginUserDto } from './dto/loginUser.dto';
 import { SaveUserDto } from './dto/saveUser.dto';
+import { AuthGuard } from './guards/auth.guard';
 import { UserService } from './user.service';
 
 @Controller('users')
 export class UserController {
     constructor(private _userService: UserService) { }
 
-    @Get('/:id')
-    findOne(@Param('id') id: number): Promise<UserModel> {
-        return this._userService.findOne(id);
+    @Get('all')
+    @UseGuards(AuthGuard)
+    async findAll(): Promise<UserModel[]> {
+        return await this._userService.findAll();
     }
 
-    @Get()
-    findAll(): Promise<UserModel[]> {
-        return this._userService.findAll();
+    @Get('/:id')
+    @UseGuards(AuthGuard)
+    findOne(@Param('id') id: number): Promise<UserModel> {
+        return this._userService.findOne(id);
     }
 
     @Post()
