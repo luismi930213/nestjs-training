@@ -7,6 +7,8 @@ import { SaveUserDto } from "./dto/saveUser.dto";
 import { sign } from 'jsonwebtoken'
 import { JWT_SECRET } from "src/config";
 import { HttpException, HttpStatus } from "@nestjs/common";
+import { LoginUserDto } from "./dto/loginUser.dto";
+import { compareSync } from 'bcrypt'
 @Injectable()
 export class UserService implements IBaseService<UserModel, SaveUserDto>  {
 
@@ -15,9 +17,11 @@ export class UserService implements IBaseService<UserModel, SaveUserDto>  {
   async findAll(): Promise<UserModel[]> {
     return await this._userRepository.find();
   }
+
   findOne(id: number): UserModel {
     throw new Error("Method not implemented.");
   }
+
   async save(item: SaveUserDto): Promise<UserModel> {
     const itemCreate = new UserModel()
     const findUniqueEmail = await this._userRepository.findOneBy({ email: item.email })
@@ -33,6 +37,22 @@ export class UserService implements IBaseService<UserModel, SaveUserDto>  {
     }, JWT_SECRET)
     return Object.assign(user, { token })
   }
+
+  async login(item: LoginUserDto): Promise<UserModel> {
+    const user = await this._userRepository.findOne(
+      {
+        where: { email: item.email },
+        select: ['id', 'bio', 'password', 'email', 'username']
+      },
+    )
+    if (!user)
+      throw new HttpException('Not valid password or email', HttpStatus.UNAUTHORIZED)
+    if (!compareSync(item.password, user.password))
+      throw new HttpException('Not valid password or email', HttpStatus.UNAUTHORIZED)
+    delete user.password  
+    return user;
+  }
+
   remove(id: number): void {
     throw new Error("Method not implemented.");
   }

@@ -14,7 +14,7 @@ export class UserModel extends BaseModel {
   @Column({ nullable: true })
   bio?: string;
 
-  @Column()
+  @Column({ select: false })
   password: string;
 
   @BeforeInsert()
