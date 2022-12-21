@@ -11,7 +11,7 @@ export class TagService implements IBaseService<TagModel, any>  {
   async findAll(): Promise<TagModel[]> {
     return await this._tagRepository.find();
   }
-  findOne(id: number): TagModel {
+  findOne(id: number): Promise<TagModel> {
     throw new Error("Method not implemented.");
   }
   save(item: TagModel): Promise<TagModel> {
