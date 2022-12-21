@@ -18,8 +18,8 @@ export class UserService implements IBaseService<UserModel, SaveUserDto>  {
     return await this._userRepository.find();
   }
 
-  findOne(id: number): UserModel {
-    throw new Error("Method not implemented.");
+  async findOne(id: number): Promise<UserModel> {
+    return await this._userRepository.findOne({ where: { id: id } });
   }
 
   async save(item: SaveUserDto): Promise<UserModel> {
@@ -30,6 +30,10 @@ export class UserService implements IBaseService<UserModel, SaveUserDto>  {
       throw new HttpException('Username or email taken', HttpStatus.UNPROCESSABLE_ENTITY)
     Object.assign(itemCreate, item);
     let user = await this._userRepository.save(itemCreate)
+    return this.signToken(user)
+  }
+
+  signToken(user: UserModel): UserModel {
     const token = sign({
       id: user.id,
       email: user.email,
@@ -49,8 +53,8 @@ export class UserService implements IBaseService<UserModel, SaveUserDto>  {
       throw new HttpException('Not valid password or email', HttpStatus.UNAUTHORIZED)
     if (!compareSync(item.password, user.password))
       throw new HttpException('Not valid password or email', HttpStatus.UNAUTHORIZED)
-    delete user.password  
-    return user;
+    delete user.password
+    return this.signToken(user);
   }
 
   remove(id: number): void {
