@@ -1,6 +1,7 @@
-import { BeforeInsert, Column, Entity } from "typeorm";
+import { BeforeInsert, Column, Entity, OneToMany } from "typeorm";
 import { BaseModel } from "./basemodel";
 import { hash } from 'bcrypt'
+import { ArticleModel } from "./article.model";
 
 @Entity({ name: 'users' })
 export class UserModel extends BaseModel {
@@ -16,6 +17,9 @@ export class UserModel extends BaseModel {
 
   @Column({ select: false })
   password: string;
+
+  @OneToMany(() => ArticleModel, (article) => article.author)
+  articles: ArticleModel[];
 
   @BeforeInsert()
   async insertHook() {
