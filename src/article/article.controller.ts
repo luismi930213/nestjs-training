@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { Patch } from '@nestjs/common/decorators';
 import { ArticleModel } from 'src/models/article.model';
 import { UserModel } from 'src/models/user.model';
@@ -8,11 +8,18 @@ import { DeleteResult } from 'typeorm';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
+import { ArticleResponse } from './types/article-response.type';
 
 @Controller('articles')
 export class ArticleController {
 
     constructor(private readonly _articleService: ArticleService) { }
+
+    @Get()
+    @UseGuards(AuthGuard)
+    async findAll(@Query() query: unknown): Promise<ArticleResponse> {
+        return await this._articleService.findAll(query)
+    }
 
     @Post()
     @UseGuards(AuthGuard)

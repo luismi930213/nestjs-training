@@ -1,5 +1,5 @@
 export interface IBaseService<T, E> {
-    findAll(): Promise<T[]>
+    findAll(query?: unknown): Promise<unknown>
     findOne(id: number): Promise<T>
     create(item: E): Promise<T>
     update(id: number, item: E): Promise<T>

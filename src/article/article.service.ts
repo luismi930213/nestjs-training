@@ -8,14 +8,31 @@ import { ArticleModel } from "src/models/article.model";
 import { DeleteResult, Repository } from "typeorm";
 import { CreateArticleDto } from "./dto/create-article.dto";
 import { UpdateArticleDto } from "./dto/update-article.dto";
+import { ArticleResponse } from "./types/article-response.type";
 
 @Injectable()
 export class ArticleService implements IBaseService<ArticleModel, CreateArticleDto> {
 
-    constructor(@InjectRepository(ArticleModel) private readonly _articleRepository: Repository<ArticleModel>) { }
+    constructor(
+        @InjectRepository(ArticleModel) private readonly _articleRepository: Repository<ArticleModel>) { }
 
-    findAll(): Promise<ArticleModel[]> {
-        throw new Error("Method not implemented.");
+    async findAll(query: any): Promise<ArticleResponse> {
+        const result = await this._articleRepository.findAndCount(
+            {
+                where: { title: query.title, author: { username: query.username } },
+                take: query.limit,
+                skip: query.skip,
+                order: { createdAt: 'DESC' },
+                relations: {
+                    author: true
+                }
+            })
+        let response = { articles: [], count: 0 }
+        if (!!result) {
+            response.articles = result[0]
+            response.count = result[1]
+        }
+        return response
     }
     async findOne(id: number): Promise<ArticleModel> {
         return await this._articleRepository.findOneBy({ id });
