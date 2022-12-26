@@ -13,6 +13,10 @@ import { compareSync } from 'bcrypt'
 export class UserService implements IBaseService<UserModel, SaveUserDto>  {
 
   constructor(@InjectRepository(UserModel) private readonly _userRepository: Repository<UserModel>) { }
+  
+  update(id: number, item: SaveUserDto): Promise<UserModel> {
+    throw new Error("Method not implemented.");
+  }
 
   async findAll(): Promise<UserModel[]> {
     return await this._userRepository.find();
@@ -22,7 +26,7 @@ export class UserService implements IBaseService<UserModel, SaveUserDto>  {
     return await this._userRepository.findOne({ where: { id: id } });
   }
 
-  async save(item: SaveUserDto): Promise<UserModel> {
+  async create(item: SaveUserDto): Promise<UserModel> {
     const itemCreate = new UserModel()
     const findUniqueEmail = await this._userRepository.findOneBy({ email: item.email })
     const findUniqueUsername = await this._userRepository.findOneBy({ username: item.username })

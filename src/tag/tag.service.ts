@@ -8,13 +8,17 @@ export class TagService implements IBaseService<TagModel, any>  {
 
   constructor(@InjectRepository(TagModel) private readonly _tagRepository: Repository<TagModel>) { }
 
+  update(id: number, item: any): Promise<TagModel> {
+    throw new Error("Method not implemented.");
+  }
+
   async findAll(): Promise<TagModel[]> {
     return await this._tagRepository.find();
   }
   findOne(id: number): Promise<TagModel> {
     throw new Error("Method not implemented.");
   }
-  save(item: TagModel): Promise<TagModel> {
+  create(item: TagModel): Promise<TagModel> {
     throw new Error("Method not implemented.");
   }
   remove(id: number): void {
