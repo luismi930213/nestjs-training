@@ -28,11 +28,18 @@ export class ArticleController {
         return await this._articleService.create(createArticle)
     }
 
+    @Post(':id/likeDislike')
+    @UseGuards(AuthGuard)
+    async likeDislikeArticle(
+        @CurrentUser('id') currentUserId: number,
+        @Param('id') id: number,
+        @Body('like') like: boolean): Promise<ArticleModel> {
+        return await this._articleService.likeArticle(currentUserId, id, like)
+    }
+
     @Patch('/:id')
     @UseGuards(AuthGuard)
     async update(@Param('id') id: number, @Body() updateArticle: UpdateArticleDto): Promise<ArticleModel> {
-        console.log(updateArticle);
-        
         return await this._articleService.update(id, updateArticle)
     }
 
