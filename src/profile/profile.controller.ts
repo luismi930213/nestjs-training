@@ -13,7 +13,7 @@ export class ProfileController {
 
     @Get(':username')
     @UseGuards(AuthGuard)
-    async getProfile(@Param('username') username: string, @CurrentUser('id') userId: number): Promise<UserModel> {
+    async getProfile(@Param('username') username: string, @CurrentUser('id') userId: number): Promise<FollowingType> {
         return await this._profileService.getProfile(username, userId)
     }
 
@@ -25,7 +25,7 @@ export class ProfileController {
 
     @Delete(':username/follow')
     @UseGuards(AuthGuard)
-    async unfollow(@Param('username') username: string, @CurrentUser('id') userId: number): Promise<UserModel> {
-        return await this._profileService.getProfile(username, userId)
+    async unfollow(@Param('username') username: string, @CurrentUser('id') userId: number): Promise<FollowingType> {
+        return await this._profileService.unfollow(username, userId)
     }
 }

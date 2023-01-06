@@ -26,10 +26,19 @@ export class ProfileService {
         return { ...userToFollow, following: true }
     }
 
-    async getProfile(username: string, userId: number): Promise<UserModel> {
-        const userExists = this._userRepository.findOneBy({ username })
+    async unfollow(username: string, userId: number): Promise<FollowingType> {
+        const userToFollow = await this._userRepository.findOne({ where: { username } })
+        if (!userToFollow)
+            throw new HttpException('Profile does not exists', HttpStatus.UNPROCESSABLE_ENTITY)
+        await this._followRepository.delete({ followerId: userId, followingId: userToFollow.id })
+        return { ...userToFollow, following: false }
+    }
+
+    async getProfile(username: string, userId: number): Promise<FollowingType> {
+        const userExists = await this._userRepository.findOne({ where: { username } })
         if (!userExists)
             throw new HttpException('Profile does not exists', HttpStatus.UNPROCESSABLE_ENTITY)
-        return userExists
+        const follow = await this._followRepository.findOne({ where: { followerId: userId } })
+        return { ...userExists, following: !!follow }
     }
 }
