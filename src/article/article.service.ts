@@ -5,8 +5,9 @@ import { InjectRepository } from "@nestjs/typeorm";
 import slugify from "slugify";
 import { IBaseService } from "src/interfaces/iBaseService.service";
 import { ArticleModel } from "src/models/article.model";
+import { FollowModel } from "src/models/follow.model";
 import { UserModel } from "src/models/user.model";
-import { DeleteResult, Repository } from "typeorm";
+import { DeleteResult, In, Repository } from "typeorm";
 import { CreateArticleDto } from "./dto/create-article.dto";
 import { UpdateArticleDto } from "./dto/update-article.dto";
 import { ArticleResponse } from "./types/article-response.type";
@@ -16,6 +17,7 @@ export class ArticleService implements IBaseService<ArticleModel, CreateArticleD
 
     constructor(
         @InjectRepository(ArticleModel) private readonly _articleRepository: Repository<ArticleModel>,
+        @InjectRepository(FollowModel) private readonly _followRepository: Repository<FollowModel>,
         @InjectRepository(UserModel) private readonly _userRepository: Repository<UserModel>) { }
 
     async findAll(query: any): Promise<ArticleResponse> {
@@ -36,6 +38,30 @@ export class ArticleService implements IBaseService<ArticleModel, CreateArticleD
         }
         return response
     }
+
+    async getFeed(userId: number, query: any): Promise<ArticleResponse> {
+        const follows = await this._followRepository.find({ where: { followerId: userId } })
+        if (!follows.length)
+            return { articles: [], count: 0 }
+        const userIds = follows.map(i => i.followingId)        
+        const result = await this._articleRepository.findAndCount(
+            {
+                where: { title: query.title, author: { id: In(userIds) } },
+                take: query.limit,
+                skip: query.skip,
+                order: { createdAt: 'DESC' },
+                relations: {
+                    author: true
+                }
+            })
+        let response = { articles: [], count: 0 }
+        if (!!result) {
+            response.articles = result[0]
+            response.count = result[1]
+        }
+        return response
+    }
+
     async findOne(id: number): Promise<ArticleModel> {
         return await this._articleRepository.findOneBy({ id });
     }
